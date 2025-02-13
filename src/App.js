@@ -8,6 +8,7 @@ import About from './pages/About';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
+import Logout from './pages/Logout';
 import './elevator.css';
 import './styles/fonts.css';
 
@@ -32,6 +33,7 @@ function App() {
 
   const getFloorNumber = (path) => {
     if (path === '/') return 1;
+    if (path === '/logout') return 0;
     const floorMap = {
       '/about': 2,
       '/services': 3,
@@ -80,6 +82,17 @@ function App() {
         }, 1000);
       }, travelTime);
     }, 1000);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('name');
+    setCurrentPage('/');
+    setAccessCards({
+      floor3: false,
+      floor4: false,
+      floor5: false
+    });
+    showCustomToast("Goodbye! Have a great day!");
   };
 
   const handleCardScan = (floor) => {
@@ -142,6 +155,7 @@ function App() {
             nodeRef={nodeRef} 
             currentPage={currentPage} 
             showToast={showCustomToast}
+            handleLogout={handleLogout}
           />
         </div>
         <div className={`elevator-doors ${doorsOpen ? 'doors-open' : ''}`}>
@@ -153,7 +167,7 @@ function App() {
   );
 }
 
-function AnimatedRoutes({ nodeRef, currentPage, showToast }) {
+function AnimatedRoutes({ nodeRef, currentPage, showToast, handleLogout }) {
   return (
     <div className="elevator-container">
       <SwitchTransition>
@@ -170,6 +184,7 @@ function AnimatedRoutes({ nodeRef, currentPage, showToast }) {
               <Route path="/services" element={<Services />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/exit" element={<Logout onLogout={handleLogout} />} />
             </Routes>
           </div>
         </CSSTransition>

@@ -19,7 +19,8 @@ function ElevatorNav({
     { path: "/contact", floor: "4F", requiresAccess: true, accessLevel: 4 },
     { path: "/services", floor: "3F", requiresAccess: true, accessLevel: 3 },
     { path: "/about", floor: "2F", requiresAccess: false },
-    { path: "/", floor: "1F", requiresAccess: false }
+    { path: "/", floor: "1F", requiresAccess: false },
+    { path: "/exit", floor: "GF", requiresAccess: false }
   ];
 
   useEffect(
@@ -61,10 +62,15 @@ function ElevatorNav({
     }
   };
 
+  // Format display floor number
+  const getDisplayFloor = (floor) => {
+    return floor === 0 ? 'G' : floor;
+  };
+
   return (
     <nav className="fixed left-8 top-1/2 transform -translate-y-1/2 bg-gray-800 rounded-lg p-4 shadow-xl z-[150]">
       {/* Floor Number */}
-      <div className="w-full bg-gray-700 p-2 rounded-lg text-center mb-4 h-12 flex items-center justify-center overflow-hidden">
+      <div className="w-full bg-gray-700 p-2 rounded-lg text-center text-xl mb-4 h-12 flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={displayFloor}
@@ -76,7 +82,7 @@ function ElevatorNav({
               ? "animate-pulse"
               : ""}`}
           >
-            {displayFloor}
+            {getDisplayFloor(displayFloor)}
             <span className="ml-2 text-gray-400">
               {getArrowDirection(displayFloor)}
             </span>
