@@ -9,16 +9,17 @@ function ElevatorNav({
   onCardScan,
   currentFloor,
   doorsOpen,
-  hasAccess
+  accessCards,
+  cardColors
 }) {
   const [displayFloor, setDisplayFloor] = useState(currentFloor);
   const [isMoving, setIsMoving] = useState(false);
   const floors = [
-    { path: "/blog", floor: "5F" },
-    { path: "/contact", floor: "4F" },
-    { path: "/services", floor: "3F" },
-    { path: "/about", floor: "2F" },
-    { path: "/", floor: "1F" }
+    { path: "/blog", floor: "5F", requiresAccess: true, accessLevel: 5 },
+    { path: "/contact", floor: "4F", requiresAccess: true, accessLevel: 4 },
+    { path: "/services", floor: "3F", requiresAccess: true, accessLevel: 3 },
+    { path: "/about", floor: "2F", requiresAccess: false },
+    { path: "/", floor: "1F", requiresAccess: false }
   ];
 
   useEffect(
@@ -82,31 +83,36 @@ function ElevatorNav({
           </motion.div>
         </AnimatePresence>
       </div>
-      <div className="flex  gap-2 items-end">
+      <div className="flex gap-2 items-end">
         <div className="flex flex-col space-y-4">
-          {/* Elevator Buttons */}
           <div className="flex flex-col space-y-2">
-            {floors.map(({ path, floor }) =>
+            {floors.map(({ path, floor, requiresAccess, accessLevel }) => (
               <ElevatorButton
                 key={path}
                 to={path}
                 floor={floor}
                 onClick={() => handlePageChange(path)}
                 currentPage={currentPage}
-                isLocked={floor === "5F" && !hasAccess}
+                isLocked={requiresAccess && !accessCards[`floor${accessLevel}`]}
               />
-            )}
+            ))}
           </div>
         </div>
-        <div className="border-2 border-gray-700 rounded-lg h-full flex items-center justify-center">
-          <button
-            title={hasAccess ? "Remove Access Card" : "Scan Access Card"}
-            onClick={onCardScan}
-            className={`border-2 border-gray-700 rounded-lg p-1 w-10 h-10 transition-colors duration-300
-              ${hasAccess ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-600 hover:bg-green-700'}`}
-          >
-            <Icon icon="mdi:card-account-details" className="w-6 h-6" />
-          </button>
+        <div className="flex flex-col gap-2">
+          {[3, 4, 5].map(floor => (
+            <button
+              key={floor}
+              title={accessCards[`floor${floor}`] ? `Remove Floor ${floor} Access` : `Scan Floor ${floor} Access`}
+              onClick={() => onCardScan(floor)}
+              className={`border-2 border-gray-700 rounded-lg p-1 w-10 h-10 transition-colors duration-300
+                ${accessCards[`floor${floor}`] 
+                  ? cardColors[`floor${floor}`].active 
+                  : cardColors[`floor${floor}`].inactive}`}
+            >
+              <Icon icon="mdi:card-account-details" className="w-6 h-6" />
+              <span className="sr-only">Floor {floor} Access</span>
+            </button>
+          ))}
         </div>
       </div>
     </nav>

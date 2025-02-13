@@ -9,6 +9,7 @@ import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
 import './elevator.css';
+import './styles/fonts.css';
 
 function App() {
   const [doorsOpen, setDoorsOpen] = useState(true);
@@ -16,8 +17,18 @@ function App() {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [currentFloor, setCurrentFloor] = useState(1);
-  const [hasAccess, setHasAccess] = useState(false);
+  const [accessCards, setAccessCards] = useState({
+    floor3: false,
+    floor4: false,
+    floor5: false
+  });
   const nodeRef = useRef(null);
+
+  const cardColors = {
+    floor3: { inactive: 'bg-green-600 hover:bg-green-700', active: 'bg-green-500 hover:bg-green-600' },
+    floor4: { inactive: 'bg-blue-600 hover:bg-blue-700', active: 'bg-blue-500 hover:bg-blue-600' },
+    floor5: { inactive: 'bg-purple-600 hover:bg-purple-700', active: 'bg-purple-500 hover:bg-purple-600' }
+  };
 
   const getFloorNumber = (path) => {
     if (path === '/') return 1;
@@ -39,14 +50,17 @@ function App() {
   const handlePageChange = (to) => {
     const targetFloor = getFloorNumber(to);
     
-    // Check if trying to access floor 5 without access
-    if (targetFloor === 5 && !hasAccess) {
-      setToastMessage("Access Denied: Floor 5 Restricted. Please scan your pass card.");
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      return;
+    // Check floor access
+    if (targetFloor > 2) {
+      const floorAccess = `floor${targetFloor}`;
+      if (!accessCards[floorAccess]) {
+        setToastMessage(`Access Denied: Floor ${targetFloor} Restricted. Please scan appropriate access card.`);
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+        return;
+      }
     }
 
     const travelTime = calculateTravelTime(currentFloor, targetFloor);
@@ -68,14 +82,27 @@ function App() {
     }, 1000);
   };
 
-  const handleCardScan = () => {
-    if (!hasAccess) {
-      setHasAccess(true);
-      setToastMessage("Access Card Scanned: Floor 5 Unlocked");
-    } else {
-      setHasAccess(false);
-      setToastMessage("Access Card Removed: Floor 5 Locked");
-    }
+  const handleCardScan = (floor) => {
+    const floorAccess = `floor${floor}`;
+    setAccessCards(prev => {
+      const newAccess = { ...prev };
+      newAccess[floorAccess] = !prev[floorAccess];
+      return newAccess;
+    });
+
+    setToastMessage(
+      accessCards[floorAccess] 
+        ? `Access Card Removed: Floor ${floor} Locked`
+        : `Access Card Scanned: Floor ${floor} Unlocked`
+    );
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
+
+  const showCustomToast = (message) => {
+    setToastMessage(message);
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
@@ -92,10 +119,15 @@ function App() {
           onCardScan={handleCardScan}
           currentFloor={currentFloor}
           doorsOpen={doorsOpen}
-          hasAccess={hasAccess}
+          accessCards={accessCards}
+          cardColors={cardColors}
         />
         <div className="flex-1 ml-32 relative">
-          <AnimatedRoutes nodeRef={nodeRef} currentPage={currentPage} />
+          <AnimatedRoutes 
+            nodeRef={nodeRef} 
+            currentPage={currentPage} 
+            showToast={showCustomToast}
+          />
         </div>
         <div className={`elevator-doors ${doorsOpen ? 'doors-open' : ''}`}>
           <div className="door-left"></div>
@@ -106,7 +138,7 @@ function App() {
   );
 }
 
-function AnimatedRoutes({ nodeRef, currentPage }) {
+function AnimatedRoutes({ nodeRef, currentPage, showToast }) {
   return (
     <div className="elevator-container">
       <SwitchTransition>
@@ -118,7 +150,7 @@ function AnimatedRoutes({ nodeRef, currentPage }) {
         >
           <div ref={nodeRef} className="elevator-page">
             <Routes location={{ pathname: currentPage }}>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home showToast={showToast} />} />
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
               <Route path="/contact" element={<Contact />} />
