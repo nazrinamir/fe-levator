@@ -2,10 +2,11 @@ import React from 'react';
 
 function About() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800">About Us</h1>
-        <p className="mt-4 text-gray-600">Learn more about our company</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="text-center space-y-4">
+        <div className="text-yellow-500 text-2xl font-mono">FLOOR 2</div>
+        <h1 className="text-6xl font-bold">About Us</h1>
+        <p className="text-gray-400 text-xl">Company Information Level</p>
       </div>
     </div>
   );

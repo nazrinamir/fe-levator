@@ -1,0 +1,54 @@
+.elevator-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.elevator-page {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.elevator-enter {
+  transform: translateY(-100%);
+}
+
+.elevator-enter-active {
+  transform: translateY(0);
+}
+
+.elevator-exit {
+  transform: translateY(0);
+}
+
+.elevator-exit-active {
+  transform: translateY(100%);
+}
+
+.elevator-doors {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.door-left, .door-right {
+  width: 50%;
+  height: 100%;
+  background-color: #1a1a1a;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.doors-open .door-left {
+  transform: translateX(-100%);
+}
+
+.doors-open .door-right {
+  transform: translateX(100%);
+} 
