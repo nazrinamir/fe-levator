@@ -15,27 +15,48 @@ function App() {
   const [currentPage, setCurrentPage] = useState('/');
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [currentFloor, setCurrentFloor] = useState(1);
   const nodeRef = useRef(null);
 
+  const getFloorNumber = (path) => {
+    if (path === '/') return 1;
+    const floorMap = {
+      '/about': 2,
+      '/services': 3,
+      '/contact': 4,
+      '/blog': 5
+    };
+    return floorMap[path];
+  };
+
+  const calculateTravelTime = (fromFloor, toFloor) => {
+    const floorDifference = Math.abs(fromFloor - toFloor);
+    const baseTime = 1000; // Base time for one floor
+    return baseTime * floorDifference;
+  };
+
   const handlePageChange = (to) => {
-    const floorNumber = to === '/' ? '1' : to.split('/')[1].charAt(0).toUpperCase();
-    setToastMessage(`Moving to Floor ${floorNumber}`);
+    const targetFloor = getFloorNumber(to);
+    const travelTime = calculateTravelTime(currentFloor, targetFloor);
+    
+    setToastMessage(`Moving from Floor ${currentFloor} to Floor ${targetFloor}`);
     setShowToast(true);
     setDoorsOpen(false);
     
     setTimeout(() => {
       setCurrentPage(to);
+      setCurrentFloor(targetFloor);
       setTimeout(() => {
         setDoorsOpen(true);
         setTimeout(() => {
           setShowToast(false);
         }, 1000);
       }, 1000);
-    }, 1000);
+    }, travelTime);
   };
 
   const handleEmergencyStop = () => {
-    setToastMessage("Emergency Stop Activated!");
+    setToastMessage(`Emergency Stop at Floor ${currentFloor}!`);
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
@@ -50,13 +71,11 @@ function App() {
           handlePageChange={handlePageChange} 
           currentPage={currentPage}
           onEmergencyStop={handleEmergencyStop}
+          currentFloor={currentFloor}
         />
-
-        {/* Content Area */}
         <div className="flex-1 ml-32 relative">
           <AnimatedRoutes nodeRef={nodeRef} currentPage={currentPage} />
         </div>
-
         <div className={`elevator-doors ${doorsOpen ? 'doors-open' : ''}`}>
           <div className="door-left"></div>
           <div className="door-right"></div>
