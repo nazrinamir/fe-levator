@@ -16,6 +16,7 @@ function App() {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [currentFloor, setCurrentFloor] = useState(1);
+  const [hasAccess, setHasAccess] = useState(false);
   const nodeRef = useRef(null);
 
   const getFloorNumber = (path) => {
@@ -37,8 +38,18 @@ function App() {
 
   const handlePageChange = (to) => {
     const targetFloor = getFloorNumber(to);
-    const travelTime = calculateTravelTime(currentFloor, targetFloor);
     
+    // Check if trying to access floor 5 without access
+    if (targetFloor === 5 && !hasAccess) {
+      setToastMessage("Access Denied: Floor 5 Restricted. Please scan your pass card.");
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      return;
+    }
+
+    const travelTime = calculateTravelTime(currentFloor, targetFloor);
     setToastMessage(`Moving from Floor ${currentFloor} to Floor ${targetFloor}`);
     setShowToast(true);
     setDoorsOpen(false);
@@ -57,8 +68,14 @@ function App() {
     }, 1000);
   };
 
-  const handleEmergencyStop = () => {
-    setToastMessage(`Emergency Stop at Floor ${currentFloor}!`);
+  const handleCardScan = () => {
+    if (!hasAccess) {
+      setHasAccess(true);
+      setToastMessage("Access Card Scanned: Floor 5 Unlocked");
+    } else {
+      setHasAccess(false);
+      setToastMessage("Access Card Removed: Floor 5 Locked");
+    }
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
@@ -72,9 +89,10 @@ function App() {
         <ElevatorNav 
           handlePageChange={handlePageChange} 
           currentPage={currentPage}
-          onEmergencyStop={handleEmergencyStop}
+          onCardScan={handleCardScan}
           currentFloor={currentFloor}
           doorsOpen={doorsOpen}
+          hasAccess={hasAccess}
         />
         <div className="flex-1 ml-32 relative">
           <AnimatedRoutes nodeRef={nodeRef} currentPage={currentPage} />

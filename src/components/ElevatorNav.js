@@ -6,9 +6,10 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 function ElevatorNav({
   handlePageChange,
   currentPage,
-  onEmergencyStop,
+  onCardScan,
   currentFloor,
-  doorsOpen
+  doorsOpen,
+  hasAccess
 }) {
   const [displayFloor, setDisplayFloor] = useState(currentFloor);
   const [isMoving, setIsMoving] = useState(false);
@@ -92,16 +93,19 @@ function ElevatorNav({
                 floor={floor}
                 onClick={() => handlePageChange(path)}
                 currentPage={currentPage}
+                isLocked={floor === "5F" && !hasAccess}
               />
             )}
           </div>
         </div>
         <div className="border-2 border-gray-700 rounded-lg h-full flex items-center justify-center">
           <button
-            onClick={onEmergencyStop}
-            className="bg-green-600 border-2 border-gray-700 rounded-lg p-1 w-10 h-10 hover:bg-green-700 transition-colors duration-300"
+            title={hasAccess ? "Remove Access Card" : "Scan Access Card"}
+            onClick={onCardScan}
+            className={`border-2 border-gray-700 rounded-lg p-1 w-10 h-10 transition-colors duration-300
+              ${hasAccess ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-600 hover:bg-green-700'}`}
           >
-            <span className="sr-only">Emergency Stop</span>
+            <Icon icon="mdi:card-account-details" className="w-6 h-6" />
           </button>
         </div>
       </div>
