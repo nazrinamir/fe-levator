@@ -84,6 +84,21 @@ function App() {
 
   const handleCardScan = (floor) => {
     const floorAccess = `floor${floor}`;
+    const cardMessages = {
+      floor3: "You need a Green Access Card for Floor 3",
+      floor4: "You need a Blue Access Card for Floor 4",
+      floor5: "You need a Purple Access Card for Floor 5"
+    };
+
+    if (!accessCards[floorAccess]) {
+      setToastMessage(`No Access Card Found: ${cardMessages[floorAccess]}`);
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      return;
+    }
+
     setAccessCards(prev => {
       const newAccess = { ...prev };
       newAccess[floorAccess] = !prev[floorAccess];

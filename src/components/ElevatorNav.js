@@ -99,7 +99,7 @@ function ElevatorNav({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          {[3, 4, 5].map(floor => (
+          {[5, 4, 3].map(floor => (
             <button
               key={floor}
               title={accessCards[`floor${floor}`] ? `Remove Floor ${floor} Access` : `Scan Floor ${floor} Access`}
