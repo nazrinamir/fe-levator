@@ -44,15 +44,17 @@ function App() {
     setDoorsOpen(false);
     
     setTimeout(() => {
-      setCurrentPage(to);
       setCurrentFloor(targetFloor);
       setTimeout(() => {
-        setDoorsOpen(true);
+        setCurrentPage(to);
         setTimeout(() => {
-          setShowToast(false);
+          setDoorsOpen(true);
+          setTimeout(() => {
+            setShowToast(false);
+          }, 1000);
         }, 1000);
-      }, 1000);
-    }, travelTime);
+      }, travelTime);
+    }, 1000);
   };
 
   const handleEmergencyStop = () => {
@@ -72,6 +74,7 @@ function App() {
           currentPage={currentPage}
           onEmergencyStop={handleEmergencyStop}
           currentFloor={currentFloor}
+          doorsOpen={doorsOpen}
         />
         <div className="flex-1 ml-32 relative">
           <AnimatedRoutes nodeRef={nodeRef} currentPage={currentPage} />

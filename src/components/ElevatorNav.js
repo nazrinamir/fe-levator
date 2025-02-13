@@ -7,7 +7,8 @@ function ElevatorNav({
   handlePageChange,
   currentPage,
   onEmergencyStop,
-  currentFloor
+  currentFloor,
+  doorsOpen
 }) {
   const [displayFloor, setDisplayFloor] = useState(currentFloor);
   const [isMoving, setIsMoving] = useState(false);
@@ -21,7 +22,7 @@ function ElevatorNav({
 
   useEffect(
     () => {
-      if (displayFloor !== currentFloor) {
+      if (!doorsOpen && displayFloor !== currentFloor) {
         setIsMoving(true);
         const direction = currentFloor > displayFloor ? 1 : -1;
         const timer = setInterval(() => {
@@ -37,7 +38,7 @@ function ElevatorNav({
         return () => clearInterval(timer);
       }
     },
-    [currentFloor, displayFloor]
+    [currentFloor, displayFloor, doorsOpen]
   );
 
   const getArrowDirection = buttonFloor => {
